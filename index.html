@@ -6,7 +6,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
     <script defer src="/script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <title>FCC Pomodoro Project</title>
   </head>
-  <body></body>
+  <body>
+    <main class="main d-flex">
+      <div class="timer">
+        <div class="btn-wrapper">
+          <div class="col">
+            <p id="break-label" class="label">Break Length</p>
+            <button id="break-increment" class="btn">
+              <img
+                class="icon-arrow"
+                src="/assets/icon-arrow-up.svg"
+                alt="arrow up icon"
+              />
+            </button>
+            <span id="break-length">5</span>
+            <button id="break-decrement" class="btn">
+              <img
+                class="icon-arrow"
+                src="/assets/icon-arrow-down.svg"
+                alt="arrow down icon"
+              />
+            </button>
+          </div>
+          <div class="col">
+            <p id="session-label" class="label">Session Length</p>
+            <button id="session-increment" class="btn">
+              <img
+                class="icon-arrow"
+                src="/assets/icon-arrow-up.svg"
+                alt="arrow up icon"
+              />
+            </button>
+            <span id="session-length">25</span>
+            <button id="session-decrement" class="btn">
+              <img
+                class="icon-arrow"
+                src="/assets/icon-arrow-down.svg"
+                alt="arrow down icon"
+              />
+            </button>
+          </div>
+        </div>
+        <div class="timer-display col">
+          <!-- Progress Bar -->
+          <div class="box">
+            <div class="percent">
+              <svg>
+                <circle cx="250" cy="250" r="200"></circle>
+                <circle cx="250" cy="250" r="200"></circle>
+              </svg>
+              <div class="number">
+                <p id="timer-label">Session</p>
+                <h1 id="time-left">25:00</h1>
+                <div class="buttons">
+                  <button id="start_stop" class="timer-display__label">
+                    start
+                  </button>
+                  <button id="reset" class="timer-display__label">reset</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--  -->
+        </div>
+      </div>
+    </main>
+  </body>
+  <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
 </html>
+
+<!-- <svg
+  xmlns="http://www.w3.org/2000/svg"
+  version="1.1"
+  width="160px"
+  height="160px"
+>
+  <defs>
+    <linearGradient id="GradientColor">
+      <stop offset="0%" stop-color="#e91e63" />
+      <stop offset="100%" stop-color="#673ab7" />
+    </linearGradient>
+  </defs>
+  <circle cx="80" cy="80" r="70" stroke-linecap="round" />
+</svg> -->
