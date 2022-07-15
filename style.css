@@ -7,6 +7,8 @@
 }
 :root {
   --number: 1255;
+  --percent: 0;
+  --barColor: rgb(233, 233, 233);
 }
 
 html {
@@ -132,16 +134,20 @@ button {
   transform: translate(5px, 5px);
   stroke-dasharray: var(--number);
   stroke-dashoffset: var(--number);
-  stroke-linecap: round;
+  /* stroke-linecap: square; */
+  transition: stroke-dashoffset 0.25s ease-in-out;
 }
 .box .percent svg circle:nth-child(1) {
   stroke-dashoffset: 0;
   stroke: rgb(233, 233, 233);
 }
+
 .box .percent svg circle:nth-child(2) {
-  stroke-dashoffset: calc(var(--number) - (var(--number) * 50) / 100);
-  stroke: gray;
-  stroke: lightgreen;
+  stroke-dashoffset: calc(
+    var(--number) - (var(--number) * var(--percent)) / 100
+  );
+  /* stroke: gray; */
+  stroke: var(--barColor);
 }
 
 .box .percent .number {
