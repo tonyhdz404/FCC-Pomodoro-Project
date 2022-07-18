@@ -1,21 +1,28 @@
 const root = document.querySelector(":root");
 //* Labels
-const lableTime = document.getElementById("time-left");
-const lableSessionLength = document.getElementById("session-length");
+const labelMain = document.getElementById("timer-label");
+const labelTime = document.getElementById("time-left");
+const labelSessionLength = document.getElementById("session-length");
+const labelBreakLength = document.getElementById("break-length");
 
 //* Buttons
 const btnStartStop = document.getElementById("start_stop");
+const btnReset = document.getElementById("reset");
 const btnSessionIncrement = document.getElementById("session-increment");
 const btnSessionDecrement = document.getElementById("session-decrement");
-const btnReset = document.getElementById("reset");
+
+const btnBreakIncrement = document.getElementById("break-increment");
+const btnBreakDecrement = document.getElementById("break-decrement");
 
 //* Timer Variables
 let timerOn = false;
 let countdownInterval;
 
 //* Default Timer Values
-let orginalTime = 25;
-let currentTime = 25;
+let orginalSessionTime = 0.15;
+let currentSessionTime = 0.15;
+let orginalBreakTime = 5;
+let currentBreakTime = 5;
 
 //* EventListeners
 // Reset Timer
@@ -23,7 +30,16 @@ btnReset.addEventListener("click", () => resetTimer());
 
 // Updating session length
 [btnSessionIncrement, btnSessionDecrement].forEach((btn) =>
-  btn.addEventListener("click", () => sessionAdjustment(btn))
+  btn.addEventListener("click", () => {
+    const btnType = btn.classList.contains("btn--increment");
+    adjustTime(btnType, labelSessionLength);
+  })
+);
+[btnBreakIncrement, btnBreakDecrement].forEach((btn) =>
+  btn.addEventListener("click", () => {
+    const btnType = btn.classList.contains("btn--increment");
+    adjustTime(btnType, labelBreakLength);
+  })
 );
 // Starting/Stopping Timer
 btnStartStop.addEventListener("click", function (e) {
@@ -31,24 +47,36 @@ btnStartStop.addEventListener("click", function (e) {
   if (timerOn) {
     this.innerText = "stop";
     root.style.setProperty("--barColor", "lightgreen");
-    return countdown();
+    console.log(orginalSessionTime, currentSessionTime);
+    return countdown(orginalSessionTime, currentSessionTime);
   }
   this.innerText = "start";
   root.style.setProperty("--barColor", "lightcoral");
   clearInterval(countdownInterval);
 });
 
-// Main countdown functionality
-function countdown() {
+//TODO Main countdown functionality
+function countdown(orginalTime, currentTime, countdownType = "typeSession") {
   let currentTimeSeconds = currentTime * 60;
   precentage(orginalTime, currentTime);
   currentTimeSeconds--;
 
   countdownInterval = setInterval(() => {
+    console.log(currentTimeSeconds);
+    if (currentTimeSeconds === 0) {
+      if (countdownType === "typeSession") {
+        labelMain.innerText = "Break";
+      }
+      if (countdownType === "typeBreak") {
+        labelMain.innerText = "Session";
+      }
+      clearInterval(countdownInterval);
+      labelTime.innerText = `${orginalBreakTime}:00`;
+      return countdown(orginalBreakTime, currentBreakTime, "typeBreak");
+    }
     let totalMinutes = currentTimeSeconds / 60;
     let outputMinutes = Math.floor(totalMinutes);
     let outputSeconds = Math.round((totalMinutes - outputMinutes) * 60);
-
     if (outputSeconds < 10) {
       outputSeconds = "0" + outputSeconds;
     }
@@ -56,10 +84,16 @@ function countdown() {
       outputMinutes = "0" + outputMinutes;
     }
 
-    lableTime.innerText = `${outputMinutes}:${outputSeconds}`;
+    labelTime.innerText = `${outputMinutes}:${outputSeconds}`;
     currentTimeSeconds--;
-    currentTime = totalMinutes;
-    precentage(orginalTime, currentTime);
+
+    if ((countdownType = "typeSession")) {
+      currentSessionTime = totalMinutes;
+    }
+    if ((countdownType = "typeBreak")) {
+      currentBreakTime = totalMinutes;
+    }
+    precentage(orginalTime, totalMinutes);
   }, 1000);
 }
 
@@ -70,19 +104,29 @@ function precentage(original, current) {
   root.style.setProperty("--percent", precentage);
 }
 // Increase Or Decrease Session time functionality
-function sessionAdjustment(adjustmentType) {
-  if (adjustmentType.id === "session-increment") {
-    lableSessionLength.innerText = +lableSessionLength.innerText + 1;
+function adjustTime(btnType, label) {
+  if (btnType) {
+    label.innerText = +label.innerText + 1;
   } else {
-    lableSessionLength.innerText = +lableSessionLength.innerText - 1;
+    label.innerText = +label.innerText - 1;
   }
-  if (lableSessionLength.innerText < 0) {
-    lableSessionLength.innerText = 0;
+  if (label.innerText <= 0) {
+    label.innerText = 1;
+  }
+  if (label.innerText >= 60) {
+    label.innerText = 60;
   }
   // Updating the timer values
-  orginalTime = +lableSessionLength.innerText;
-  currentTime = +lableSessionLength.innerText;
-  return (lableTime.innerText = `${lableSessionLength.innerText}:00`);
+  if (label === labelSessionLength) {
+    orginalSessionTime = +label.innerText;
+    currentSessionTime = +label.innerText;
+    return (labelTime.innerText = `${label.innerText}:00`);
+  }
+  if (label === labelBreakLength) {
+    orginalBreakTime = +label.innerText;
+    currentBreakTime = +label.innerText;
+    return;
+  }
 }
 
 function resetTimer() {
@@ -91,7 +135,11 @@ function resetTimer() {
   clearInterval(countdownInterval);
   orginalTime = 25;
   currentTime = 25;
-  lableTime.innerText = `25:00`;
-  lableSessionLength.innerText = "25";
+  orginalBreakTime = 5;
+  currentBreakTime = 5;
+  labelTime.innerText = `25:00`;
+  labelSessionLength.innerText = "25";
+  labelBreakLength.innerText = "5";
+  labelMain.innerText = "Session";
   root.style.setProperty("--barColor", "rgb(233, 233, 233)");
 }
