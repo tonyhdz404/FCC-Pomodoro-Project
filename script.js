@@ -1,4 +1,5 @@
 const root = document.querySelector(":root");
+const audio = document.getElementById("beep");
 //* Labels
 const labelMain = document.getElementById("timer-label");
 const labelTime = document.getElementById("time-left");
@@ -10,19 +11,17 @@ const btnStartStop = document.getElementById("start_stop");
 const btnReset = document.getElementById("reset");
 const btnSessionIncrement = document.getElementById("session-increment");
 const btnSessionDecrement = document.getElementById("session-decrement");
-
 const btnBreakIncrement = document.getElementById("break-increment");
 const btnBreakDecrement = document.getElementById("break-decrement");
 
-//* Timer Variables
+//* Default Timer Values
 let timerOn = false;
 let countdownInterval;
-
-//* Default Timer Values
-let orginalSessionTime = 0.15;
-let currentSessionTime = 0.15;
+let orginalSessionTime = 25;
+let currentSessionTime = 25;
 let orginalBreakTime = 5;
 let currentBreakTime = 5;
+let sessionType = "typeSession";
 
 //* EventListeners
 // Reset Timer
@@ -47,32 +46,55 @@ btnStartStop.addEventListener("click", function (e) {
   if (timerOn) {
     this.innerText = "stop";
     root.style.setProperty("--barColor", "lightgreen");
-    console.log(orginalSessionTime, currentSessionTime);
-    return countdown(orginalSessionTime, currentSessionTime);
+    if (sessionType === "typeSession") {
+      labelMain.innerText = "session";
+
+      return countdown(orginalSessionTime, currentSessionTime, "typeSession");
+    } else {
+      labelMain.innerText = "break";
+      return countdown(orginalBreakTime, currentBreakTime, "typeBreak");
+    }
   }
+
   this.innerText = "start";
   root.style.setProperty("--barColor", "lightcoral");
   clearInterval(countdownInterval);
+  if (sessionType === "typeSession") {
+    labelMain.innerText = "Session Paused";
+  } else {
+    labelMain.innerText = "Break Paused";
+  }
 });
 
 //TODO Main countdown functionality
 function countdown(orginalTime, currentTime, countdownType = "typeSession") {
+  sessionType = countdownType;
   let currentTimeSeconds = currentTime * 60;
-  precentage(orginalTime, currentTime);
+  // precentage(orginalTime, currentTime);
   currentTimeSeconds--;
 
   countdownInterval = setInterval(() => {
-    console.log(currentTimeSeconds);
-    if (currentTimeSeconds === 0) {
+    if (currentTimeSeconds < 0) {
+      audio.play();
+      // Stopping the current countdown timer
+      clearInterval(countdownInterval);
+      // Checking what session type we are CURRENTLY on and Reset current time
       if (countdownType === "typeSession") {
-        labelMain.innerText = "Break";
+        labelMain.innerText = "break";
+        currentBreakTime = orginalBreakTime;
+        labelTime.innerText = `${
+          orginalBreakTime < 10 ? "0" : ""
+        }${orginalBreakTime}:00`;
+        return countdown(orginalBreakTime, currentBreakTime, "typeBreak");
       }
       if (countdownType === "typeBreak") {
-        labelMain.innerText = "Session";
+        labelMain.innerText = "session";
+        currentSessionTime = orginalSessionTime;
+        labelTime.innerText = `${
+          orginalSessionTime < 10 ? "0" : ""
+        }${orginalSessionTime}:00`;
+        return countdown(orginalSessionTime, currentSessionTime, "typeSession");
       }
-      clearInterval(countdownInterval);
-      labelTime.innerText = `${orginalBreakTime}:00`;
-      return countdown(orginalBreakTime, currentBreakTime, "typeBreak");
     }
     let totalMinutes = currentTimeSeconds / 60;
     let outputMinutes = Math.floor(totalMinutes);
@@ -87,13 +109,13 @@ function countdown(orginalTime, currentTime, countdownType = "typeSession") {
     labelTime.innerText = `${outputMinutes}:${outputSeconds}`;
     currentTimeSeconds--;
 
-    if ((countdownType = "typeSession")) {
+    if (countdownType === "typeSession") {
       currentSessionTime = totalMinutes;
     }
-    if ((countdownType = "typeBreak")) {
+    if (countdownType === "typeBreak") {
       currentBreakTime = totalMinutes;
     }
-    precentage(orginalTime, totalMinutes);
+    // precentage(orginalTime, totalMinutes);
   }, 1000);
 }
 
@@ -120,7 +142,9 @@ function adjustTime(btnType, label) {
   if (label === labelSessionLength) {
     orginalSessionTime = +label.innerText;
     currentSessionTime = +label.innerText;
-    return (labelTime.innerText = `${label.innerText}:00`);
+    return (labelTime.innerText = `${label.innerText < 10 ? "0" : ""}${
+      label.innerText
+    }:00`);
   }
   if (label === labelBreakLength) {
     orginalBreakTime = +label.innerText;
@@ -130,16 +154,19 @@ function adjustTime(btnType, label) {
 }
 
 function resetTimer() {
+  audio.pause();
+  audio.currentTime = 0;
   timerOn = false;
   btnStartStop.innerText = "start";
   clearInterval(countdownInterval);
-  orginalTime = 25;
-  currentTime = 25;
+  orginalSessionTime = 25;
+  currentSessionTime = 25;
   orginalBreakTime = 5;
   currentBreakTime = 5;
+  sessionType = "typeSession";
   labelTime.innerText = `25:00`;
   labelSessionLength.innerText = "25";
   labelBreakLength.innerText = "5";
-  labelMain.innerText = "Session";
+  labelMain.innerText = "session";
   root.style.setProperty("--barColor", "rgb(233, 233, 233)");
 }

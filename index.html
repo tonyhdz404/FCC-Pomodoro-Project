@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css" />
     <script defer src="/script.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="shortcut icon" href="#" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"
@@ -64,7 +65,7 @@
                 <circle class="bar" cx="250" cy="250" r="200"></circle>
               </svg>
               <div class="number">
-                <p id="timer-label">Session</p>
+                <h3 id="timer-label">session</h3>
                 <h1 id="time-left">25:00</h1>
                 <div class="buttons">
                   <button id="start_stop" class="timer-display__label">
@@ -76,6 +77,12 @@
             </div>
           </div>
           <!--  -->
+          <audio
+            id="beep"
+            src="./assets/sound1.mp3"
+            type="audio/mp3"
+            autoplay="false"
+          ></audio>
         </div>
       </div>
     </main>
